@@ -291,17 +291,17 @@ loadPets();
       return;
     }
 
-    const saved = JSON.parse(localStorage.getItem('bloodPressureData')) || [];
-    const filtered = saved.filter(e => e.systolic && e.diastolic);
+    const data = JSON.parse(localStorage.getItem(storageKeyFor(currentPet.slug)) || '[]');
+const filtered = data.filter(e => e.syst || e.diast);
 
-    if (filtered.length === 0) {
-      ctx.parentElement.innerHTML = '<p style="color:#777">Пока нет данных для графика</p>';
-      return;
-    }
+if (filtered.length === 0) {
+  ctx.parentElement.innerHTML = '<p style="color:#777">Пока нет данных для графика</p>';
+  return;
+}
 
-    const labels = filtered.map(e => e.date);
-    const systolic = filtered.map(e => e.systolic);
-    const diastolic = filtered.map(e => e.diastolic);
+const labels = filtered.map(e => e.date + ' ' + e.time);
+const systolic = filtered.map(e => parseFloat(e.syst) || null);
+const diastolic = filtered.map(e => parseFloat(e.diast) || null);
 
     new Chart(ctx, {
       type: 'line',
