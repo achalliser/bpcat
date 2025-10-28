@@ -200,7 +200,13 @@ function selectPet(slug){
 
 function loadEntries(){
   if(!currentPet) return;
-  const data = JSON.parse(localStorage.getItem(storageKeyFor(currentPet.slug)) || '[]');
+  let data = JSON.parse(localStorage.getItem(storageKeyFor(currentPet.slug)) || '[]');
+  data.sort((a, b) => {
+    const dateA = new Date(`${a.date || ''} ${a.time || ''}`);
+    const dateB = new Date(`${b.date || ''} ${b.time || ''}`);
+    return dateA - dateB;
+  });
+  localStorage.setItem(storageKeyFor(currentPet.slug), JSON.stringify(data));
   entriesTbody.innerHTML = '';
   data.forEach((e,i)=>{
     const tr = document.createElement('tr');
@@ -215,6 +221,7 @@ function loadEntries(){
     entriesTbody.appendChild(tr);
   });
   renderStats();
+  renderChart(); 
 }
 
 function saveEntries(arr){
