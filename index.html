@@ -281,5 +281,40 @@ function renderStats(){
 loadPets();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', renderChart);
+
+  function renderChart() {
+    const ctx = document.getElementById('pressureChart');
+    if (!ctx) {
+      console.warn('Canvas не найден');
+      return;
+    }
+
+    const saved = JSON.parse(localStorage.getItem('bloodPressureData')) || [];
+    const filtered = saved.filter(e => e.systolic && e.diastolic);
+
+    if (filtered.length === 0) {
+      ctx.parentElement.innerHTML = '<p style="color:#777">Пока нет данных для графика</p>';
+      return;
+    }
+
+    const labels = filtered.map(e => e.date);
+    const systolic = filtered.map(e => e.systolic);
+    const diastolic = filtered.map(e => e.diastolic);
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          { label: 'Систолическое', data: systolic, borderWidth: 2, tension: 0.3 },
+          { label: 'Диастолическое', data: diastolic, borderWidth: 2, tension: 0.3 }
+        ]
+      },
+      options: { responsive: true, scales: { y: { beginAtZero: false } } }
+    });
+  }
+</script>
 </body>
 </html>
